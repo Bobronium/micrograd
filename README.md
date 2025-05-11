@@ -32,8 +32,8 @@ loss_component = squared_error / 2.0
 final_loss = loss_component + 10.0 / squared_error
 print(f'{final_loss.data:.4f}') # prints 24.7041, the outcome of this forward pass
 final_loss.backward()
-print(f'{weight_param.grad:.4f}') # prints 138.8338, i.e. the numerical value of dg/da
-print(f'{bias_term.grad:.4f}') # prints 645.5773, i.e. the numerical value of dg/db
+print(f'{weight_param.grad:.4f}') # prints 138.8338, i.e. the numerical value of d(final_loss)/d(weight_param)
+print(f'{bias_term.grad:.4f}') # prints 645.5773, i.e. the numerical value of d(final_loss)/d(bias_term)
 ```
 
 ### Training a neural net
