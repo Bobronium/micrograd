@@ -18,22 +18,22 @@ Below is a slightly contrived example showing a number of possible supported ope
 ```python
 from micrograd.engine import Value
 
-a = Value(-4.0)
-b = Value(2.0)
-c = a + b
-d = a * b + b**3
-c += c + 1
-c += 1 + c + (-a)
-d += d * 2 + (b + a).relu()
-d += 3 * d + (b - a).relu()
-e = c - d
-f = e**2
-g = f / 2.0
-g += 10.0 / f
-print(f'{g.data:.4f}') # prints 24.7041, the outcome of this forward pass
-g.backward()
-print(f'{a.grad:.4f}') # prints 138.8338, i.e. the numerical value of dg/da
-print(f'{b.grad:.4f}') # prints 645.5773, i.e. the numerical value of dg/db
+weight_param = Value(-4.0)
+bias_term = Value(2.0)
+linear_combination = weight_param + bias_term
+nonlinear_component = weight_param * bias_term + bias_term**3
+linear_combination += linear_combination + 1
+linear_combination += 1 + linear_combination + (-weight_param)
+nonlinear_component += nonlinear_component * 2 + (bias_term + weight_param).relu()
+nonlinear_component += 3 * nonlinear_component + (bias_term - weight_param).relu()
+feature_difference = linear_combination - nonlinear_component
+squared_error = feature_difference**2
+loss_component = squared_error / 2.0
+final_loss = loss_component + 10.0 / squared_error
+print(f'{final_loss.data:.4f}') # prints 24.7041, the outcome of this forward pass
+final_loss.backward()
+print(f'{weight_param.grad:.4f}') # prints 138.8338, i.e. the numerical value of dg/da
+print(f'{bias_term.grad:.4f}') # prints 645.5773, i.e. the numerical value of dg/db
 ```
 
 ### Training a neural net
@@ -47,11 +47,14 @@ The notebook `demo.ipynb` provides a full demo of training an 2-layer neural net
 For added convenience, the notebook `trace_graph.ipynb` produces graphviz visualizations. E.g. this one below is of a simple 2D neuron, arrived at by calling `draw_dot` on the code below, and it shows both the data (left number in each node) and the gradient (right number in each node).
 
 ```python
-from micrograd import nn
-n = nn.Neuron(2)
-x = [Value(1.0), Value(-2.0)]
-y = n(x)
-dot = draw_dot(y)
+from micrograd.nn import Neuron
+from micrograd.engine import Value
+from micrograd.trace_graph import draw_dot
+
+neuron_2d = Neuron(2)
+input_features = [Value(1.0), Value(-2.0)]
+neuron_output = neuron_2d(input_features)
+computation_graph = draw_dot(neuron_output)
 ```
 
 ![2d neuron](gout.svg)
